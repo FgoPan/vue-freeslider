@@ -31,7 +31,6 @@ export default {
             required: true
         }
     },
-
     data() {
         return {
             active: false,
@@ -42,20 +41,18 @@ export default {
             max: null
         };
     },
-
     ready() {
-        this.data.forEach(item => {
-            this.values.push(item.value)
-            this.labels.push(item.label)
-        })
-        this.max = (Math.max.apply(null, this.values))
-        this.xscale = this.value / this.max * 100 //初始化显示值
-
+        this.initComponent() 
         // Put the Listener
         document.addEventListener("mousemove", this.dragMove)
         document.addEventListener("touchmove", this.dragMove)
         document.addEventListener("mouseup", this.dragEnd)
         document.addEventListener("touchend", this.dragEnd)
+    },
+    watch:{
+        data(val){
+            this.initComponent()
+        }
     },
     computed:{
         thumbLeft(){
@@ -63,7 +60,9 @@ export default {
         },
         title(){
             let v = this.data.find(item => item.value == this.value)
-            return v.label
+            if(v){
+                return v.label
+            }
         }
     },
     methods: {
@@ -72,6 +71,16 @@ export default {
         },
         blur() {
             this.active = false
+        },
+        initComponent(){
+            this.values = []
+            this.labels = []
+            this.data.forEach(item => {
+                this.values.push(item.value)
+                this.labels.push(item.label)
+            })
+            this.max = (Math.max.apply(null, this.values))
+            this.xscale = this.value / this.max * 100 //初始化显示值
         },
         sliderClick(e) {
             let stepScale = this.max / this.$els.slider.offsetWidth; //步进比例 百分比
